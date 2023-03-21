@@ -30,8 +30,17 @@ router.get('/votes/:id', async (req, res) => {
 
     let data = await model.ListVotesTTS(id);
 
-    res.status(200);
-    res.send(data.url);
+    console.log(data)
+
+    if (data != null) {
+        res.status(200);
+        res.send(data);
+    } else {
+        res.status(500);
+        res.send('Internal Server Error');
+    }
+
+    
 })
 
 

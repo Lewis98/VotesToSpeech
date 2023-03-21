@@ -9,8 +9,9 @@ const reqHandler = require('axios').default;
 const childModel = require('./members');
 
 const SURL = require('../helpers/shortener');
+const TTS = require('../helpers/TTS');
 
-const APIConf = require('../config/voiceRSS.conf');
+
 
 /**
  *  Return votes by MP
@@ -33,20 +34,9 @@ module.exports.ListVotesTTS = async (id)=>{
         ttsOutput += `${vote.voted}, the ${vote.act} act. `;
     })
 
+    link = await TTS.generateLink(ttsOutput);
 
-    let response = await reqHandler.get(`http://api.voicerss.org/?key=${APIConf.API_Key}&hl=en-gb&src=${ttsOutput}`);
-    let ttsURL = await SURL.shortern(response.request.res.responseUrl);
-
-    if (response.status == 200){
-        let responseObj = {
-            url: ttsURL,
-            data: response.data
-        }
-
-        return responseObj;
-    }else{
-        throw new Error(response)
-    };  
+    return link;
 
 };
 
