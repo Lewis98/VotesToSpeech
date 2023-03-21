@@ -15,5 +15,10 @@ const members = require('./routes/members');
 app.use(members);
 
 
+const membersTTS = require('./routes/membersTTS');
+app.use('/TTS', membersTTS);
+
+
+
 console.log(`Listening on Port '${port}'`);
 app.listen(port);

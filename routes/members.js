@@ -20,12 +20,32 @@ const model = require('../models/members');
  * @param {object} req - HTTP Request object
  * @param {object} res - HTTP Resonse object
  */
-router.get('/MPs', async (req, res) => {
+router.get('/MP', async (req, res) => {
     data = await model.ListMPs();
     res.status(200);
     res.send(data);
 })
 
+
+/**
+ * getMemberByID
+ * 
+ * @description Returns a member of parliament by ID
+ * @param {object} req - HTTP Request object
+ * @param {object} res - HTTP Resonse object
+ */
+router.get('/MP/:id', async (req, res) => {
+
+    let id = Number(req.params.id);
+    if (id == NaN) {
+        throw new Error(`getMPVotes Route - ID must be a valid integer value, '${req.params.id}' supplied`);
+        return null;
+    }
+
+    let data = await model.getMP(id);
+    res.status(200);
+    res.send(data);
+})
 
 
 /**
