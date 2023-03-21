@@ -1,3 +1,9 @@
+# Commit msg file (for multi-line commits)
+commitmsg
+
+# JSDoc
+out
+
 # Logs
 logs
 *.log
