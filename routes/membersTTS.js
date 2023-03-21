@@ -28,9 +28,17 @@ router.get('/votes/:id', async (req, res) => {
         return null;
     }
 
-    let data = await model.ListVotesTTS(id);
+    
+    qGenerateFile = req.query.createFile ? true : false;
+    qCollated = req.query.collate ? true : false;
 
-    console.log(data)
+
+    data = await model.ListVotesTTS(id, qGenerateFile, qCollated);
+    
+    if (qGenerateFile) {
+        // If generating a file, prefix file path with full URL
+        data = `${req.protocol}://${req.host}:${process.env.PORT || 3000}${req.originalUrl}` + data
+    }
 
     if (data != null) {
         res.status(200);

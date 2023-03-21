@@ -5,10 +5,7 @@
  * @author Lewis Stokes
  */
 
-const reqHandler = require('axios').default;
 const childModel = require('./members');
-
-const SURL = require('../helpers/shortener');
 const TTS = require('../helpers/TTS');
 
 
@@ -19,22 +16,63 @@ const TTS = require('../helpers/TTS');
  * @description Returns array of MPs and apiIDs
  * @param id {number} - ID of MP to list voting history of
  */
-module.exports.ListVotesTTS = async (id)=>{
+module.exports.ListVotesTTS = async (id, generateFile=false, collated=false)=>{
+
+    if (typeof generateFile != 'boolean') {
+        throw new Error(`ListVotesTTS - generateFile must be boolean, '${typeof generateFile}' supplied`);
+    }
+
+    if (typeof collated != 'boolean') {
+        throw new Error(`ListVotesTTS - collated must be boolean, '${typeof collated}' supplied`);
+    }
 
     if (!Number.isInteger(id)) {
         throw new Error(`ListVotesTTS - ID must be integer, '${typeof id}' supplied`);
-        return null;
     };
     
     let MP = await childModel.getMP(id);
-    let voteData = await childModel.ListVotes(id);    
+    let voteData = await childModel.ListVotes(id);
+    
+    let ttsOutput = '';
+    if (voteData.length == 0) {
+        ttsOutput = `${MP.name}, ${MP.party} M P, appears to have no voting record.`
+    } else {
+        ttsOutput = `${MP.name}, ${MP.party} M P, has voted: `;
 
-    let ttsOutput = `${MP.name}, ${MP.party} MP, has voted: `;
-    voteData.forEach((vote) => {
-        ttsOutput += `${vote.voted}, the ${vote.act} act. `;
-    })
+        if (collated){
+            votesFor = [];
+            votesAgainst = [];
 
-    link = await TTS.generateLink(ttsOutput);
+            voteData.forEach((vote) => {
+                if (vote.voted == 'For') {
+                    votesFor.push(vote.act)
+                }else{
+                    votesAgainst.push(vote.act)
+                }
+            })
+
+            ttsOutput += `For the following acts. `;
+            votesFor.forEach((act) => {
+                ttsOutput += act + ', ';
+            })
+
+            ttsOutput += `And has voted against the following acts. `;
+            votesAgainst.forEach((act) => {
+                ttsOutput += act + ', ';
+            })
+        }else{
+            voteData.forEach((vote) => {
+                ttsOutput += `${vote.voted}, the ${vote.act} act. `;
+            })
+        }
+        
+    }
+
+    if (generateFile) {
+        link = await TTS.generateFile(MP.apiId, ttsOutput);
+    } else {
+        link = await TTS.generateLink(ttsOutput);
+    }
 
     return link;
 

@@ -7,7 +7,7 @@ module.exports.shortern = async (link) => {
 
     let surl = await reqHandler.post('https://url-shortener-service.p.rapidapi.com/shorten', {url: link}, {headers : {
         'content-type': 'application/x-www-form-urlencoded',
-        'X-RapidAPI-Key': 'ffeafb812amsh508a5fe868359f9p164974jsn613d3226fb28',
+        'X-RapidAPI-Key': process.env.SHORTLINK_API_KEY,
         'X-RapidAPI-Host': 'url-shortener-service.p.rapidapi.com'
     }})
 
