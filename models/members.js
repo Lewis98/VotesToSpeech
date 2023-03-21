@@ -15,15 +15,15 @@ const reqHandler = require('axios').default;
  */
 module.exports.ListMPs = async ()=>{
 
-    rawData = await reqHandler.get('https://members-api.parliament.uk/api/Members/Search?skip=0&take=20');
+    rawData = await reqHandler.get('https://members-api.parliament.uk/api/Members/Search?skip=0&take=20&house=1');
 
     returnObj = [];
 
-    rawData.data.items.forEach((MP, index) => {
-        returnObj.push = {
+    rawData.data.items.forEach((MP) => {
+        returnObj.push({
             apiId: MP.value.id,
             name: MP.value.nameDisplayAs
-        }
+        })
     })
     
 
